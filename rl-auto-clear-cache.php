@@ -39,7 +39,10 @@ class AutoClearCache {
 				"post" => "posts",
 				"page" => "pages",
 				"attachment" => "attachment",
-				"revision" => "revision"
+				"revision" => "revision",
+				"project" => 'projects',
+				'agenda' => 'agenda',
+				'event' => 'events'
 		);
 
 		// TODO not clear all cache, only for the current post and archive
