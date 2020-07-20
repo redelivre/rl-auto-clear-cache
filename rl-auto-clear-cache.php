@@ -30,6 +30,7 @@ class AutoClearCache {
 	
 	public function admin_init() {
 		add_action ( 'transition_post_status', array($this, 'post_status'), 10, 3 );
+		add_action ( 'dm_handle_actions_init', array($this, 'dm_handle_actions_init'), 10, 1 ); // handle domain mapping
 	}
 	
 	public function post_status($new_status, $old_status, $post) {
@@ -47,17 +48,24 @@ class AutoClearCache {
 				'forminator_polls' => 'forminator_polls', // Forminator
 				'forminator_quizzes' => 'forminator_quizzes' // Forminator
 		);
-
-		// TODO not clear all cache, only for the current post and archive
 		if (array_key_exists ( $post->post_type, $custom_post_types ) && ($new_status === "publish" || $old_status === "publish")) {
-			if (defined ( 'W3TC' )) {
-				// Flush everything!
-				w3tc_flush_all ();
-			}
-			if (defined ( 'CLOUDFLARE_PLUGIN_DIR' )) {
-				$CF_Hooks = new \CF\WordPress\Hooks ();
-				$CF_Hooks->purgeCacheEverything ();
-			}
+			$this->clear($post);
+		}
+	}
+	
+	public function dm_handle_actions_init($domain) {
+		$this->clear();
+	}
+	
+	protected function clear($post = null) {
+		// TODO not clear all cache, only for the current post and archive
+		if (defined ( 'W3TC' )) {
+			// Flush everything!
+			w3tc_flush_all ();
+		}
+		if (defined ( 'CLOUDFLARE_PLUGIN_DIR' )) {
+			$CF_Hooks = new \CF\WordPress\Hooks ();
+			$CF_Hooks->purgeCacheEverything ();
 		}
 	}
 }
