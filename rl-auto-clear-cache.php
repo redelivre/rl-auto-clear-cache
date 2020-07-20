@@ -42,7 +42,10 @@ class AutoClearCache {
 				"revision" => "revision",
 				"project" => 'projects',
 				'agenda' => 'agenda',
-				'event' => 'events'
+				'event' => 'events',
+				'forminator_forms' => 'forminator_forms', // Forminator
+				'forminator_polls' => 'forminator_polls', // Forminator
+				'forminator_quizzes' => 'forminator_quizzes' // Forminator
 		);
 
 		// TODO not clear all cache, only for the current post and archive
