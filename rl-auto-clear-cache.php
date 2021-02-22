@@ -26,11 +26,27 @@ namespace RedeLivre;
 class AutoClearCache {
 	function __construct() {
 		add_action( 'admin_init', array($this, 'admin_init'));
+		add_action( 'init', array($this, 'init'));
+	}
+	
+	public function init() {
+		static $done = false;
+		if ( $done ) {
+			return;
+		}
+		$done = true;
+		
+		if (!is_user_logged_in() ) {
+			header( 'x-HTML-Edge-Cache: bypass-cookies=wp-|wordpress|comment_|woocommerce_' );
+		} else {
+			header( 'x-HTML-Edge-Cache: nocache' );
+		}
 	}
 	
 	public function admin_init() {
-		add_action ( 'transition_post_status', array($this, 'post_status'), 10, 3 );
-		add_action ( 'dm_handle_actions_init', array($this, 'dm_handle_actions_init'), 10, 1 ); // handle domain mapping
+		add_action ( 'transition_post_status', array($this, 'post_status'), 99, 3 );
+		add_action ( 'dm_handle_actions_init', array($this, 'dm_handle_actions_init'), 99, 1 ); // handle domain mapping
+		add_action ( 'updated_mapsvg_meta', array($this, 'updated_mapsvg_meta'), 99, 4 ); // handle domain mapping
 	}
 	
 	public function post_status($new_status, $old_status, $post) {
@@ -68,6 +84,20 @@ class AutoClearCache {
 			$CF_Hooks->purgeCacheEverything ();
 		}
 	}
+	
+	/**
+	 * Clear when change mapsvg config
+	 * 
+	 * @param int $meta_id
+	 * @param int $object_id
+	 * @param string $meta_key
+	 * @param string $_meta_value
+	 */
+	public function updated_mapsvg_meta($meta_id, $object_id, $meta_key, $_meta_value) {
+		$this->clear($object_id);
+	}
+	
+	
 }
 
 new \RedeLivre\AutoClearCache ();
